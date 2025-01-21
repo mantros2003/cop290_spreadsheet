@@ -14,6 +14,18 @@ struct column_segment {
 };
 
 /*
+ * Function that creates a new column segment and returns its head pointer
+ */
+struct column_segment* make_segment() {
+  struct column_segment *seg = malloc(sizeof(struct column_segment));
+  seg->start_idx = 0;
+  seg->next = NULL;
+  for (int i = 0; i < SEGMENT_LENGTH; i++) (seg->segment)[i] = 0;
+
+  return seg;
+}
+
+/*
  * Function to retrieve data from the storage structure, column_segment.
  */
 int get_data(int idx, struct column_segment *head) {
@@ -31,27 +43,21 @@ int get_data(int idx, struct column_segment *head) {
  */
 int set_data(int idx, int data, struct column_segment **head) {
   // Need to ensure that idx is not out of bounds wherever the function is being used
-  // The case when this column is being used for the first time so the head pointer itself is NULL
-  if (*head == NULL) {
-    struct column_segment *seg = malloc(sizeof(struct column_segment));
-    seg->start_idx = (idx / SEGMENT_LENGTH) * SEGMENT_LENGTH;
-    seg->next = NULL;
-
-    *head = seg;
+  // Checking if head pointer is NULL, then check if the current segment has idx
+  struct column_segment *prev = NULL;
+  while (*head != NULL && (idx < (*head)->start_idx || idx >= (*head)->start_idx + SEGMENT_LENGTH)) {
+    prev = *head;
+    head = &((*head)->next);
   }
 
-  // Checking if the current segment has idx
-  while (idx < (*head)->start_idx || idx >= (*head)->start_idx + SEGMENT_LENGTH) {
-    // Code to handle the case when the segment for idx is not initialised
-    if ((*head)->next == NULL) {
-      struct column_segment *seg = malloc(sizeof(struct column_segment));
-      seg->start_idx = (idx / SEGMENT_LENGTH) * SEGMENT_LENGTH;
-      seg->next = NULL;
+  // The case when this column is being used for the first time so the head pointer itself is NULL
+  // or the case when the segment for idx is not initialised
+  if (*head == NULL) {
+    *head = make_segment();
+    (*head)->start_idx = (idx / SEGMENT_LENGTH) * SEGMENT_LENGTH;
 
-      (*head)->next = seg;
-    }
-
-    head = &((*head)->next);
+    // prev pointer is NULL when the initial head pointer is NULL, i.e. the column is not iniitialized
+    if (prev != NULL) prev->next = *head;
   }
   
   ((*head)->segment)[idx % SEGMENT_LENGTH] = data;
