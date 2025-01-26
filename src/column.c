@@ -1,17 +1,8 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include "column.h"
+#include "cell.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-#define SEGMENT_LENGTH 100
-
-/*
- * A segment of column to store data of size SEGMENT_LENGTH. Modeled as a linked list
- * to save memory while initializing.
- */
-struct column_segment {
-  int start_idx;                  // The first index stored in this segment
-  int segment[SEGMENT_LENGTH];    // To store data, change it to struct for adding dependencies
-  struct column_segment *next;    // Link to the next storage block
-};
 
 /*
  * Function that creates a new column segment and returns its head pointer
@@ -20,21 +11,21 @@ struct column_segment* make_segment() {
   struct column_segment *seg = malloc(sizeof(struct column_segment));
   seg->start_idx = 0;
   seg->next = NULL;
-  for (int i = 0; i < SEGMENT_LENGTH; i++) (seg->segment)[i] = 0;
+  for (int i = 0; i < SEGMENT_LENGTH; i++) (seg->segment)[i].data = 0;
 
   return seg;
 }
 
 /*
  * Function to retrieve data from the storage structure, column_segment.
- */
+*/
 int get_data(int idx, struct column_segment *head) {
   // Need to ensure that wherever we are invoking this function, idx is in range, i.e. less than the user defined num_rows.
   while (idx < head->start_idx || idx >= head->start_idx + SEGMENT_LENGTH) {
     head = head->next;
   }
 
-  return (head->segment)[idx % SEGMENT_LENGTH];
+  return (head->segment)[idx % SEGMENT_LENGTH].data;
 }
 
 /*
@@ -60,7 +51,7 @@ int set_data(int idx, int data, struct column_segment **head) {
     if (prev != NULL) prev->next = *head;
   }
   
-  ((*head)->segment)[idx % SEGMENT_LENGTH] = data;
+  ((*head)->segment)[idx % SEGMENT_LENGTH].data = data;
   return 0;
 }
 
