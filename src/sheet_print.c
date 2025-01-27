@@ -65,11 +65,11 @@ void print_array(int** arr,int rows,int cols){
         printf("\n");
     }
 }
-int main(){
-    int x;
-    int y;
-    scanf("%d %d",&x,&y);
-    int** arr=create_array(x,y);
-    print_array(arr,x,y);
-    return 0;
-}
+// int main(){
+//     int x;
+//     int y;
+//     scanf("%d %d",&x,&y);
+//     int** arr=create_array(x,y);
+//     print_array(arr,x,y);
+//     return 0;
+// }
