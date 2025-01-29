@@ -2,6 +2,7 @@
 #define COLUMN_H_
 
 #define SEGMENT_LENGTH 100
+#define DATA int
 
 #include "cell.h"
 
@@ -19,9 +20,9 @@ struct column_segment {
 
 struct column_segment* make_segment();
 
-int get_data(int idx, struct column_segment *head);
+DATA get_data(int idx, struct column_segment *head);
 
-int set_data(int idx, int data, struct column_segment **head);
+void set_data(int idx, DATA data, struct column_segment **head);
 
 void free_segment(struct column_segment **head);
 

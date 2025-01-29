@@ -58,6 +58,7 @@ void add_dep(struct cell **from, struct cell **to, char oper) {
   (*to)->oper = oper;
 }
 
+/*
 int main() {
   struct cell *c1 = malloc(sizeof(struct cell));
   c1->data = 120, c1->oper = ' ', c1->in_edges = NULL, c1->out_edges = NULL;
@@ -80,3 +81,4 @@ int main() {
   printf("%p", (void*) &c1);
   return 0;
 }
+*/

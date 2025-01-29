@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+ * Removes the node which contains the pointer to cell target
+ */
 void rm_node_ll(struct nodes_ll **head_node, struct cell **target) {
   struct nodes_ll *prev = NULL;
   struct nodes_ll *curr = *head_node;
@@ -23,6 +26,9 @@ void rm_node_ll(struct nodes_ll **head_node, struct cell **target) {
   }
 }
 
+/*
+ * Returns a new nodes_ll instance with all pointers NULL
+ */
 struct nodes_ll *mk_ll() {
   struct nodes_ll *ll_head = malloc(sizeof(struct nodes_ll));
   ll_head->cell_ptr = NULL;
@@ -30,6 +36,9 @@ struct nodes_ll *mk_ll() {
   return ll_head;
 }
 
+/*
+ * Prints all the pointers in the linked list
+ */
 void print_ll(struct nodes_ll *head) {
   while (head != NULL)  {
     printf("%p ", (void*) head->cell_ptr);

@@ -19,7 +19,7 @@ struct column_segment* make_segment() {
 /*
  * Function to retrieve data from the storage structure, column_segment.
 */
-int get_data(int idx, struct column_segment *head) {
+DATA get_data(int idx, struct column_segment *head) {
   // Need to ensure that wherever we are invoking this function, idx is in range, i.e. less than the user defined num_rows.
   while (idx < head->start_idx || idx >= head->start_idx + SEGMENT_LENGTH) {
     head = head->next;
@@ -32,7 +32,7 @@ int get_data(int idx, struct column_segment *head) {
  * Function to place data into the storage structure.
  * If the segment for idx is not initialized it will dynamically allocate memory.
  */
-int set_data(int idx, int data, struct column_segment **head) {
+void set_data(int idx, DATA data, struct column_segment **head) {
   // Need to ensure that idx is not out of bounds wherever the function is being used
   // Checking if head pointer is NULL, then check if the current segment has idx
   struct column_segment *prev = NULL;
@@ -52,7 +52,6 @@ int set_data(int idx, int data, struct column_segment **head) {
   }
   
   ((*head)->segment)[idx % SEGMENT_LENGTH].data = data;
-  return 0;
 }
 
 /*
@@ -82,6 +81,7 @@ void print_column(struct column_segment *head) {
   printf("\n");
 }
 
+/*
 int main() {
   int num_cols = 5;
   struct column_segment* store[num_cols];
@@ -117,3 +117,4 @@ int main() {
   for (int i = 0; i< num_cols; i ++) free_segment(&store[i]);
   return 0;
 }
+*/
