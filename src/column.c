@@ -21,9 +21,11 @@ struct column_segment* make_segment() {
 */
 DATA get_data(int idx, struct column_segment *head) {
   // Need to ensure that wherever we are invoking this function, idx is in range, i.e. less than the user defined num_rows.
-  while (idx < head->start_idx || idx >= head->start_idx + SEGMENT_LENGTH) {
+  while (head != NULL && (idx < head->start_idx || idx >= head->start_idx + SEGMENT_LENGTH)) {
     head = head->next;
   }
+
+  if (head == NULL) return 0;
 
   return (head->segment)[idx % SEGMENT_LENGTH].data;
 }
