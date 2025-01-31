@@ -121,8 +121,8 @@ void print_array(int** arr,int rows,int cols,int* col_max_length){
     }
 }
 void print_array_constrained_helper(int rowStart,int rowMax,int colStart,int colMax,int** arr,int* colMaxLength){
-    int rowEnd=rowStart+10>rowMax?rowMax:rowStart+9;
-    int colEnd=colStart+10>colMax?colMax:colStart+9;
+    int rowEnd=rowStart+9>rowMax?rowMax:rowStart+9;
+    int colEnd=colStart+9>colMax?colMax:colStart+9;
     printf("     ");
     for(int colNumber=colStart;colNumber<=colEnd;colNumber++){
         printf("%s  ",modify(convertAlpha(colNumber),colMaxLength,colNumber));
