@@ -4,29 +4,6 @@
 #include <stdlib.h>
 
 /*
- * Removes the node which contains the pointer to cell target
- */
-void rm_node_ll(struct nodes_ll **head_node, struct cell **target) {
-  struct nodes_ll *prev = NULL;
-  struct nodes_ll *curr = *head_node;
-
-  while (curr != NULL) {
-    if (*target == curr->cell_ptr) {
-      if (prev == NULL) {
-        *head_node = curr->next;
-      } else {
-        prev->next = curr->next;
-      }
-
-      break;
-    }
-
-    prev = curr;
-    curr = curr->next;
-  }
-}
-
-/*
  * Returns a new nodes_ll instance with all pointers NULL
  */
 struct nodes_ll *mk_ll() {
@@ -46,6 +23,78 @@ void print_ll(struct nodes_ll *head) {
   }
 
   printf("\n");
+}
+
+/*
+ * Removes the node which contains the pointer to cell target
+ */
+void rm_node_ll(struct nodes_ll **head_node, struct cell *target) {
+  struct nodes_ll *prev = NULL;
+  struct nodes_ll *curr = *head_node;
+
+  while (curr != NULL) {
+    if (target == curr->cell_ptr) {
+      if (prev == NULL) {
+        *head_node = curr->next;
+      } else {
+        prev->next = curr->next;
+        free(curr);
+      }
+
+      break;
+    }
+
+    prev = curr;
+    curr = curr->next;
+  }
+}
+
+/*
+ * Function to remove all in_edges from cell
+ */
+void rm_in_edges(struct cell *c) {
+  struct nodes_ll *prev_node = NULL;
+  struct nodes_ll *curr_node = c->in_edges;
+
+  while (curr_node != NULL) {
+    // Removing the out edge from the cell reffered to in this cell
+    rm_node_ll(&((curr_node->cell_ptr)->out_edges), c);
+
+    // Traversing the linked list and freeing the nodes
+    prev_node = curr_node;
+    curr_node = curr_node->next;
+    free(prev_node);
+  }
+
+  c->oper = ' ';
+  c->in_edges = NULL;
+}
+
+/*
+ * Adds a new nodes_ll in from->out_edges and to->in_edges
+ * Establishes link between cells from and to
+ * from haas a link to cell to
+ * to has a link to cell from
+ * Changes to's operator to the operator provided in function
+ */
+void add_dep(struct cell *from, struct cell *to, char oper) {
+  // nodes_ll to be added to the front of from's nodes_ll
+  // The node will have a pointer to the cell to
+  struct nodes_ll *from_dep = mk_ll();
+  from_dep->cell_ptr = *to;
+
+  struct nodes_ll *from_head = from->out_edges;
+  from->out_edges = from_dep;
+  from_dep->next = from_head;
+  
+  struct nodes_ll *to_dep = mk_ll();
+  to_dep->cell_ptr = from;
+
+  struct nodes_ll *to_head = to->in_edges;
+  to->in_edges = to_dep;
+  to_dep->next = to_head;
+
+  to->oper = oper;
 }
 
 /*

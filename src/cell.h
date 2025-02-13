@@ -12,14 +12,13 @@ struct nodes_ll;
 struct cell {
   DATA data;
   char oper;
+  _Bool error;
   struct nodes_ll *in_edges;
   struct nodes_ll *out_edges;
 };
 
+struct cell *mk_cell();
+
 void print_cell(struct cell *c);
-
-void rm_in_edges(struct cell **c);
-
-void add_dep(struct cell **from, struct cell **to, char oper);
 
 #endif // CELL_H_

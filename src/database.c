@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+ * Make a new database struct and set all pointers to NULL
+ */
 database* mk_db(int num_cols) {
   database *db = malloc(sizeof(database));
   db->num_cols = num_cols;
@@ -11,16 +14,32 @@ database* mk_db(int num_cols) {
   return db;
 }
 
+/*
+ * Sets the data at a particular [r, c]
+ */
 void set(database *db, int row, int col, DATA data) {
   set_data(row, data, &((db->cols)[col]));
 }
 
+/*
+ * Gets the data from [r, v]
+ */
 DATA get(database *db, int row, int col) {
   if ((db->cols)[col] == NULL) return 0;
 
   return get_data(row, (db->cols)[col]);
 }
 
+/*
+ * Returns a pointer to head of column
+ */
+struct column_segment *get_column(database *db, int col) {
+  return (db->cols)[col];
+}
+
+/*
+ * Helper function to free the memory
+ */
 void free_db(database **db) {
   for (int i = 0; i < (*db)->num_cols; i++) free_segment(&((*db)->cols[i]));
   free(*db);

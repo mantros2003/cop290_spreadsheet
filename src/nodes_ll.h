@@ -12,10 +12,14 @@ struct nodes_ll {
   struct nodes_ll *next;
 };
 
-void rm_node_ll(struct nodes_ll**, struct cell**);
+struct nodes_ll *mk_ll();
 
 void print_ll(struct nodes_ll*);
 
-struct nodes_ll *mk_ll();
+void rm_node_ll(struct nodes_ll**, struct cell*);
+
+void rm_in_edges(struct cell *c);
+
+void add_dep(struct cell *from, struct cell *to, char oper);
 
 #endif // NODES_LL_H_

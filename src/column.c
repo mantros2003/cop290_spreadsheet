@@ -11,7 +11,12 @@ struct column_segment* make_segment() {
   struct column_segment *seg = malloc(sizeof(struct column_segment));
   seg->start_idx = 0;
   seg->next = NULL;
-  for (int i = 0; i < SEGMENT_LENGTH; i++) (seg->segment)[i].data = 0;
+  for (int i = 0; i < SEGMENT_LENGTH; i++) {
+    (seg->segment)[i].data = 0;
+    (seg->segment)[i].oper = ' ';
+    (seg->segment)[i].error = 0;
+    (seg->segment)[i].in_edges = NULL;
+    (seg->segment)[i].out_edges = NULL;
 
   return seg;
 }
@@ -54,6 +59,19 @@ void set_data(int idx, DATA data, struct column_segment **head) {
   }
   
   ((*head)->segment)[idx % SEGMENT_LENGTH].data = data;
+}
+
+/*
+ * Returns pointer to the cell corresponding to the row
+ */
+struct cell *get_cell(int row, struct column_segment *head) {
+  while (head != NULL && (row < head->start_idx || row >= head->start_idx + SEGMENT_LENGTH)) head = head->next;
+
+  if (head != NULL) {
+    return &((head->segment)[row % SEGMENT_LENGTH]);
+  }
+
+  return NULL;
 }
 
 /*
@@ -120,3 +138,4 @@ int main() {
   return 0;
 }
 */
+}
