@@ -14,6 +14,8 @@ struct nodes_ll {
 
 struct nodes_ll *mk_ll();
 
+int num_nodes(struct nodes_ll*);
+
 void print_ll(struct nodes_ll*);
 
 void rm_node_ll(struct nodes_ll**, struct cell*);

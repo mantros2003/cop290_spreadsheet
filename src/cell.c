@@ -13,6 +13,8 @@ struct cell *mk_cell() {
   cell->error = 0;
   cell->in_edges = NULL;
   cell->out_edges = NULL;
+
+  return cell;
 }
 
 /*

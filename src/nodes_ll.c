@@ -13,6 +13,16 @@ struct nodes_ll *mk_ll() {
   return ll_head;
 }
 
+int num_nodes(struct nodes_ll *head) {
+  int sz = 0;
+  while (head != NULL) {
+    ++sz;
+    head = head->next;
+  }
+
+  return sz;
+}
+
 /*
  * Prints all the pointers in the linked list
  */
@@ -81,7 +91,7 @@ void add_dep(struct cell *from, struct cell *to, char oper) {
   // nodes_ll to be added to the front of from's nodes_ll
   // The node will have a pointer to the cell to
   struct nodes_ll *from_dep = mk_ll();
-  from_dep->cell_ptr = *to;
+  from_dep->cell_ptr = to;
 
   struct nodes_ll *from_head = from->out_edges;
   from->out_edges = from_dep;
