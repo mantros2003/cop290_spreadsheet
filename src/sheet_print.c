@@ -46,7 +46,7 @@ void print_sheet(database* db,int row,int col){
         printf("%-9s",convertAlpha(colnumber));
     }
     printf("\n");
-    for(int rowNumber=row;rowNumber<(row+10);rowNumber++){
+    for(int rowNumber=row;rowNumber<rowEnd;rowNumber++){
         printf("%-8d",rowNumber);
         for(int colNumber=col;colNumber<colEnd;colNumber++){
             if(has_error(db,colNumber,rowNumber)){
