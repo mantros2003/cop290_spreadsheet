@@ -17,6 +17,7 @@ struct column_segment* make_segment() {
     (seg->segment)[i].error = 0;
     (seg->segment)[i].in_edges = NULL;
     (seg->segment)[i].out_edges = NULL;
+  }
 
   return seg;
 }
@@ -64,7 +65,7 @@ void set_data(int idx, DATA data, struct column_segment **head) {
 /*
  * Returns pointer to the cell corresponding to the row
  */
-struct cell *get_cell(int row, struct column_segment *head) {
+struct cell *get_cell_seg(int row, struct column_segment *head) {
   while (head != NULL && (row < head->start_idx || row >= head->start_idx + SEGMENT_LENGTH)) head = head->next;
 
   if (head != NULL) {
@@ -138,4 +139,3 @@ int main() {
   return 0;
 }
 */
-}
