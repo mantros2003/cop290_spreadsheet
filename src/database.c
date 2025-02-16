@@ -31,10 +31,21 @@ DATA get(database *db, int row, int col) {
 }
 
 /*
- * Returns a pointer to head of column
+ * Returns a pointer to head of column at index col
  */
 struct column_segment *get_column(database *db, int col) {
   return (db->cols)[col];
+}
+
+/*
+ * Returns the pointer to cell located at [row, col]
+ */
+struct cell *get_cell(database *db, int col, int row) {
+  struct column_segment *column = get_column(db, col);
+
+  if (column == NULL) return NULL;
+
+  return get_cell_seg(row, column);
 }
 
 /*

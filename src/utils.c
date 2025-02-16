@@ -1,10 +1,13 @@
 #include "hashset.h"
 #include "nodes_ll.h"
 #include "cell.h"
-#include "hashset.c"
 #include <stdio.h>
 
-struct nodes_ll *dfs(struct cell *cell, hashset *visited, struct nodes_ll *component) {
+/*
+ * Travels the graph depth first assuming the graph to be undirected
+ * Travels both the out edged and the in edges to construct the complete connected component
+ */
+struct nodes_ll *dfs_ud(struct cell *cell, hashset *visited, struct nodes_ll *component) {
   struct nodes_ll *new_node = mk_ll();
   new_node->cell_ptr = cell;
   new_node->next = component;
@@ -14,7 +17,7 @@ struct nodes_ll *dfs(struct cell *cell, hashset *visited, struct nodes_ll *compo
   struct nodes_ll *node = cell->in_edges;
   while (node != NULL) {
     if (!in_hset(visited, (long) node->cell_ptr, node->cell_ptr)) {
-      new_node = dfs(node->cell_ptr, visited, new_node);
+      new_node = dfs_ud(node->cell_ptr, visited, new_node);
     }
 
     node = node->next;
@@ -23,7 +26,7 @@ struct nodes_ll *dfs(struct cell *cell, hashset *visited, struct nodes_ll *compo
   node = cell->out_edges;
   while (node != NULL) {
     if (!in_hset(visited, (long) node->cell_ptr, node->cell_ptr)) {
-      new_node = dfs(node->cell_ptr, visited, new_node);
+      new_node = dfs_ud(node->cell_ptr, visited, new_node);
     }
 
     node = node->next;
@@ -32,11 +35,19 @@ struct nodes_ll *dfs(struct cell *cell, hashset *visited, struct nodes_ll *compo
   return new_node;
 }
 
+/*
+ * Returns the connected component that cell is part of
+ */
 struct nodes_ll *connected_component(struct cell *cell) {
   hashset *visited = mk_hashset(NULL, HASHTABLE_SIZE);
-  return dfs(cell, visited, NULL);
+  struct nodes_ll *component = dfs_ud(cell, visited, NULL);
+  free_hset(visited);
+  return component;
 }
 
+/*
+ * Travels the graph depth first and travels only through out edges
+ */
 _Bool traverse(struct cell* curr_cell, hashset* visited_global, hashset* visited_local) {
   _Bool result = 0;
 
@@ -58,6 +69,9 @@ _Bool traverse(struct cell* curr_cell, hashset* visited_global, hashset* visited
   return result;
 }
 
+/**
+ * Checks if the connected component component has a cycle
+ */
 _Bool contains_cycle(struct nodes_ll *component) {
   hashset *visited_global = mk_hashset(NULL, HASHTABLE_SIZE);
 
@@ -69,11 +83,18 @@ _Bool contains_cycle(struct nodes_ll *component) {
       printf("starting traversal from %p...\n", curr->cell_ptr);
       insert_hset(visited_global, (long) curr->cell_ptr, curr->cell_ptr);
       insert_hset(visited_local, (long) curr->cell_ptr, curr->cell_ptr);
-      if (traverse(curr->cell_ptr, visited_global, visited_local)) return 1;
+      if (traverse(curr->cell_ptr, visited_global, visited_local)) {
+        free_hset(visited_local);
+        free_hset(visited_global);
+        return 1;
+      }
     }
 
     curr = curr->next;
+    free_hset(visited_local);
   }
+
+  free_hset(visited_global);
 
   return 0;
 }
@@ -98,6 +119,8 @@ int main() {
   node = connected_component(cells[3]);
   printf("%d nodes, contains cycle: %s ", num_nodes(node), contains_cycle(node) ? "yes" : "no");
   print_ll(node);
+
+  for (int i = 0; i < 5; i++) free(cells[i]);
 
   return 0;
 }

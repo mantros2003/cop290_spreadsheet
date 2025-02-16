@@ -24,7 +24,7 @@ DATA get_data(int idx, struct column_segment *head);
 
 void set_data(int idx, DATA data, struct column_segment **head);
 
-struct cell *get_cell(int, struct column_segment**)
+struct cell *get_cell_seg(int, struct column_segment*);
 
 void free_segment(struct column_segment **head);
 

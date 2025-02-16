@@ -22,6 +22,10 @@ _Bool in_hset(hashset*, long, struct cell*);
 
 _Bool insert_hset(hashset*, long, struct cell*);
 
-_Bool insert_hset(hashset*, long, struct cell*);
+_Bool rm_hset(hashset*, long, struct cell*);
+
+void free_hnode(hashnode*);
+
+void free_hset(hashset*);
 
 #endif // HASHSET_H

@@ -21,6 +21,8 @@ DATA get(database*, int, int);
 
 struct column_segment *get_column(database*, int);
 
+struct cell *get_cell(database*, int, int);
+
 void free_db(database **sb);
 
 #endif // DATABASE_H_
