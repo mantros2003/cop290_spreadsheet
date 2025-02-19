@@ -17,6 +17,16 @@ struct cell *mk_cell() {
   return cell;
 }
 
+struct cell *mk_isolated_cell() {
+  struct cell *cell = malloc(sizeof(struct cell));
+  cell->data = 0;
+  cell->oper = -1;
+  cell->error = 0;
+  cell->in_edges = NULL;
+  cell->out_edges = NULL;
+
+  return cell;}
+
 /*
  * Prints all the fields in cell
  */

@@ -20,7 +20,7 @@ hashset *mk_hashset(int (*hash_fn)(long, int), int table_sz) {
 
   set->table_sz = table_sz;
   set->hash_fn = hash_fn ? hash_fn : default_hash;
-  set->table = malloc(table_sz * sizeof(hashnode));
+  set->table = malloc(table_sz * sizeof(hashnode*));
 
   for (int i = 0; i < set->table_sz; i++) {
     set->table[i] = NULL;
@@ -64,7 +64,7 @@ _Bool insert_hset(hashset *set, long key, struct cell *val) {
 }
 
 /*
- * Removes val's pointer from the hashset
+ * Removes val's pointer from the hashset and also frees the malloc
  * If not in hashset, returns 0 else 1
  */
 _Bool rm_hset(hashset *set, long key, struct cell *val) {
@@ -95,27 +95,27 @@ _Bool rm_hset(hashset *set, long key, struct cell *val) {
 /*
  * Frees the linked list pointed by hashnode
  */
-void free_hnode(hashnode *node){
-  hashnode *curr = node;
+void free_hnode(hashnode **node){
+  hashnode *curr = *node, *temp = NULL;
 
   while (curr != NULL) {
-    node = curr->next;
+    temp = curr->next;
     free(curr);
-    curr = node;
+    curr = temp;
   }
+
+  *node = NULL;
 }
 
 /*
  * Frees the memory allocated for each hashnode linked list, then frees set->table, then the hashset
  */
-void free_hset(hashset* set) {
-  for (int i = 0; i < set->table_sz; i++) {
-    if (set->table[i] != NULL) {
-      free(set->table[i]);
-      set->table[i] = NULL;
+void free_hset(hashset** set) {
+  for (int i = 0; i < (*set)->table_sz; i++) {
+    if ((*set)->table[i] != NULL) {
+      free_hnode(&((*set)->table[i]));
     }
   }
 
-  free(set->table);
-  free(set);
+  free(*set);
 }

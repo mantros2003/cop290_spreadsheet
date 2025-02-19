@@ -13,6 +13,31 @@ struct nodes_ll *mk_ll() {
   return ll_head;
 }
 
+void free_ll(struct nodes_ll **head) {
+  struct nodes_ll *curr = *head;
+  struct nodes_ll *temp = *head;
+
+  while (curr != NULL) {
+    temp = curr->next;
+    free(curr);
+    curr = temp;
+  }
+
+  *head = NULL;
+}
+
+/*
+ * Adds new_node to the end of linked list whose head is head
+ */
+void add_node_end(struct nodes_ll **head, struct nodes_ll **new_node) {
+  struct nodes_ll* curr = *head;
+
+  while (curr != NULL && curr->next != NULL) curr = curr->next;
+
+  if (curr == NULL) *head = *new_node;
+  else curr->next = *new_node;
+}
+
 int num_nodes(struct nodes_ll *head) {
   int sz = 0;
   while (head != NULL) {
@@ -59,52 +84,20 @@ void rm_node_ll(struct nodes_ll **head_node, struct cell *target) {
   }
 }
 
-/*
- * Function to remove all in_edges from cell
- */
-void rm_in_edges(struct cell *c) {
-  struct nodes_ll *prev_node = NULL;
-  struct nodes_ll *curr_node = c->in_edges;
+struct nodes_ll *copy_ll(struct nodes_ll *node) {
+  if (node == NULL) return NULL;
 
-  while (curr_node != NULL) {
-    // Removing the out edge from the cell reffered to in this cell
-    rm_node_ll(&((curr_node->cell_ptr)->out_edges), c);
+  struct nodes_ll *head = mk_ll(), *curr = head;
 
-    // Traversing the linked list and freeing the nodes
-    prev_node = curr_node;
-    curr_node = curr_node->next;
-    free(prev_node);
+  while (node != NULL) {
+    curr->cell_ptr = node->cell_ptr;
+
+    if (node->next != NULL) curr->next = mk_ll();
+    node = node->next;
+    curr = curr->next;
   }
 
-  c->oper = ' ';
-  c->in_edges = NULL;
-}
-
-/*
- * Adds a new nodes_ll in from->out_edges and to->in_edges
- * Establishes link between cells from and to
- * from haas a link to cell to
- * to has a link to cell from
- * Changes to's operator to the operator provided in function
- */
-void add_dep(struct cell *from, struct cell *to, char oper) {
-  // nodes_ll to be added to the front of from's nodes_ll
-  // The node will have a pointer to the cell to
-  struct nodes_ll *from_dep = mk_ll();
-  from_dep->cell_ptr = to;
-
-  struct nodes_ll *from_head = from->out_edges;
-  from->out_edges = from_dep;
-  from_dep->next = from_head;
-  
-  struct nodes_ll *to_dep = mk_ll();
-  to_dep->cell_ptr = from;
-
-  struct nodes_ll *to_head = to->in_edges;
-  to->in_edges = to_dep;
-  to_dep->next = to_head;
-
-  to->oper = oper;
+  return head;
 }
 
 /*

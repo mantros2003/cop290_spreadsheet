@@ -6,9 +6,10 @@
 /*
  * Make a new database struct and set all pointers to NULL
  */
-database* mk_db(int num_cols) {
+database* mk_db(int num_cols, int num_rows) {
   database *db = malloc(sizeof(database));
   db->num_cols = num_cols;
+  db->num_rows = num_rows;
   db->cols = malloc(sizeof(struct column_segment*) * num_cols);
   for (int i = 0; i < num_cols; i++) (db->cols)[i] = NULL;
   return db;
@@ -48,6 +49,14 @@ struct cell *get_cell(database *db, int col, int row) {
   return get_cell_seg(row, column);
 }
 
+_Bool has_error(database *db, int row, int col) {
+  struct cell *c = get_cell(db, col, row);
+
+  if (c == NULL) return 0;
+
+  return c->error;
+}
+
 /*
  * Helper function to free the memory
  */
@@ -56,26 +65,26 @@ void free_db(database **db) {
   free(*db);
 }
 
-int main() {
-  int num_cols = 10;
-  database *db = mk_db(num_cols);
-  for (int col = 0; col < num_cols - 1; col++) {
-    for (int row = 0; row < 500; row += 50) {
-      set(db, row, col, row * col + 1);
-    }
-  }
+// int main() {
+//   int num_cols = 10;
+//   database *db = mk_db(num_cols, 100);
+//   for (int col = 0; col < num_cols - 1; col++) {
+//     for (int row = 0; row < 500; row += 50) {
+//       set(db, row, col, row * col + 1);
+//     }
+//   }
 
-  for (int col = 0; col < num_cols; col++) {
-    for (int row = 0; row < 500; row ++) {
-      printf("[%d, %d]:\t%d\n", row, col, get(db, row, col));
-    }
-  }
+//   for (int col = 0; col < num_cols; col++) {
+//     for (int row = 0; row < 500; row ++) {
+//       printf("[%d, %d]:\t%d\n", row, col, get(db, row, col));
+//     }
+//   }
   
-  printf("%d\n", get(db, 0, 1));
+//   printf("%d\n", get(db, 0, 1));
 
-  free_db(&db);
+//   free_db(&db);
 
-  printf("%d\n", get(db, 0, 1));
+//   printf("%d\n", get(db, 0, 1));
 
-  return 0;
-}
+//   return 0;
+// }

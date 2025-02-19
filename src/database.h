@@ -10,10 +10,11 @@
 */
 typedef struct {
   int num_cols;
+  int num_rows;
   struct column_segment **cols;
 } database;
 
-database *mk_db(int);
+database *mk_db(int, int);
 
 void set(database*, int, int, DATA);
 
@@ -23,6 +24,8 @@ struct column_segment *get_column(database*, int);
 
 struct cell *get_cell(database*, int, int);
 
-void free_db(database **sb);
+_Bool has_error(database*, int, int);
+
+void free_db(database**);
 
 #endif // DATABASE_H_

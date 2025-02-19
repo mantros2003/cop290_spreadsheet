@@ -19,6 +19,8 @@ struct cell {
 
 struct cell *mk_cell();
 
+struct cell *mk_isolated_cell();
+
 void print_cell(struct cell *c);
 
 #endif // CELL_H_
