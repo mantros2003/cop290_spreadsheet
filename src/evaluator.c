@@ -238,7 +238,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
   if (r.func >= 13 && r.func <= 16) return 0;
 
   // Now all functions have a target
-  if (!cell_in_range(db, r.target - 1)) return 2;   // Check the error code
+  if (!cell_in_range(db, r.target - 1001)) return 2;   // Check the error code
 
   // scroll_to function
   if (r.func == 20) {
