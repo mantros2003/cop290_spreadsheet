@@ -1,5 +1,5 @@
 #include "cell.h"
-#include "utils.h"      // Make utils.h
+#include "utils.h"
 #include "database.h"
 #include "nodes_ll.h"
 #include "_parser.h"
@@ -12,11 +12,15 @@
 /*
  * Reevaluates cell c based on its oper
  * Calls appropriate function for functions
+ * If reevaluation is sucessful, removes error if any
  */
 void evaluate(struct cell *c) {
+
+  // If oper is 1, then simple assignment operation
   if (c->oper == 1)
     ;
 
+  // Identity dependency, Cell=Cell
   if (c->oper == 2) {
     if (c->in_edges->cell_ptr->error) c->error = 1;
     else {
@@ -24,6 +28,8 @@ void evaluate(struct cell *c) {
       c->error = 0;
     }
   }
+
+  // Binary operations +, -, *, /
   if (c->oper >= 3 && c->oper <= 6) {
     struct cell *left, *right;
     right = c->in_edges->cell_ptr;
@@ -55,6 +61,7 @@ void evaluate(struct cell *c) {
     }
   }
 
+  // Call the respective functions
   if (c->oper == 7) min_fn(c);
 
   if (c->oper == 8) max_fn(c);
@@ -70,25 +77,28 @@ void evaluate(struct cell *c) {
 
 /*
  * Implements the sleep functionality; takes a cell
- * First cell is target; Second cell when argument of sleep is a cell
- * Else second cell is a NULL pointer if the argument of sleep is an int
+ * If cell has no dependency, then sleeps based on data stored in cell
+ * Else visits the dependency and fetches value, and sleeps
  */
 void sleep_fn(struct cell *target) {
+  // If no dependency
   if (target->in_edges == NULL) {
     if (target->data >= 0) sleep(target->data);
     target->error = 0;
     return;
   }
 
+  // If dependency
   if (target->in_edges->cell_ptr->error) target->error = 1;
   else if (target->in_edges->cell_ptr->data >= 0) {
     sleep(target->in_edges->cell_ptr->data);
+    target->data = target->in_edges->cell_ptr->data;
     target->error = 0;
   }
   else target->error = 0;
 }
 
-/**
+/*
  * Calculates the maximum of the range cell target depends on
  */
 void max_fn(struct cell* target) {
@@ -109,7 +119,7 @@ void max_fn(struct cell* target) {
   target->error = 0;
 }
 
-/**
+/*
  * Calculates the minimum of the range cell target depends on
  */
 void min_fn(struct cell* target) {
@@ -130,7 +140,7 @@ void min_fn(struct cell* target) {
   target->error = 0;
 }
 
-/**
+/*
  * Calculates the sum of cells dependent on cell target
  */
 void sum_fn(struct cell* target) {
@@ -151,7 +161,7 @@ void sum_fn(struct cell* target) {
   target->error = 0;
 }
 
-/**
+/*
  * Calculates the average of cells dependent on cell taregt
  */
 void avg_fn(struct cell* target) {
@@ -173,7 +183,7 @@ void avg_fn(struct cell* target) {
   target->error = 0;
 }
 
-/**
+/*
  * Calculates the STDEV of the cells dependent on cell target
  */
 void stdev_fn(struct cell* target) {
@@ -206,7 +216,8 @@ void stdev_fn(struct cell* target) {
  * Takes input from parsera and acts on it
  */
 int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *display_state) {
-  print_resp(r);
+  //print_resp(r);
+  // If parser returns an error, returns the same error code
   if (r.status) return r.status;
 
   // Checking functions that don't have a target
@@ -229,9 +240,9 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
 
   int col = *topleft / 1000, row = *topleft % 1000;
   if (r.func == 13) row = (row - 10 < 0) ? 0 : row - 10;
-  if (r.func == 14) col = (col + 20 > db->num_cols) ? db->num_cols - 10 : col + 10;
-  if (r.func == 15) col = (row - 10 < 0) ? 0 : row - 10;
-  if (r.func == 16) row = (row + 20 > db->num_rows) ? db->num_rows - 10 : row + 10;
+  if (r.func == 14) col = (col + 20 > db->num_cols) ? ((db->num_cols - 10 < 0) ? 0: db->num_cols - 10) : col + 10;
+  if (r.func == 15) col = (row - 10 < 0) ? 0 : col - 10;
+  if (r.func == 16) row = (row + 20 > db->num_rows) ? ((db->num_rows - 10 < 0) ? 0: db->num_rows - 10) : row + 10;
 
   *topleft = 1000 * col + row;
 
@@ -274,6 +285,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
 
     struct nodes_ll *copy_dep = copy_ll(target->in_edges);                                // Take a copy of old dependencies
     char oper_old = target->oper;
+    _Bool error_old = target->error;
     rm_all_dep(target);                                                                   // Remove dependencies from target
     add_dependency(db, r.arg1 - 1001, r.target - 1001, r.func);
 
@@ -284,6 +296,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
       rm_all_dep(target);
       add_dep_ll(copy_dep, target);
       target->oper = oper_old;
+      target->error = error_old;
 
       free_ll(&copy_dep);
       free_ll(&node);
@@ -310,6 +323,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
 
   struct nodes_ll *copy_dep = copy_ll(target->in_edges);
   char old_oper = target->oper;
+  char old_error = target->error;
   rm_all_dep(target);
 
   if (r.func >= 3 && r.func <= 6) {
@@ -347,7 +361,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
 
   if (r.func == 12) {
     if (r.arg_type & 2) {
-      add_dependency(db, r.target - 1001, r.arg1 - 1001, r.func);
+      add_dependency(db, r.arg1 - 1001, r.target - 1001, r.func);
     }
     else {
       target->data = r.arg1;
@@ -363,6 +377,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
     rm_all_dep(target);
     add_dep_ll(copy_dep, target);
     target->oper = old_oper;
+    target->error = old_error;
 
     free_ll(&dep_graph);
     free_ll(&copy_dep);
