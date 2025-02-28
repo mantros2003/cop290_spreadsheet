@@ -216,7 +216,7 @@ void stdev_fn(struct cell* target) {
  * Takes input from parsera and acts on it
  */
 int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *display_state) {
-  //print_resp(r);
+  // print_resp(r);
   // If parser returns an error, returns the same error code
   if (r.status) return r.status;
 

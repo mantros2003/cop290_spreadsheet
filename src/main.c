@@ -1,6 +1,6 @@
 #include "database.h"
-#include "utils.h"          // Make utils.h
-#include "_parser.h"        // Make parser.h
+#include "utils.h"
+#include "_parser.h"
 #include "print.h"
 #include "evaluator.h"
 #include <stdio.h>
@@ -20,6 +20,10 @@ int main(int argc, char **argv) {
     }
 
     static int num_rows, num_cols;
+    if (strlen(argv[1]) >= 4 || strlen(argv[2]) >= 6) {
+        printf("Invalid input parameters\n");
+        return 1;
+    }
     num_rows = atoi(argv[1]);
     num_cols = atoi(argv[2]);
 
@@ -48,14 +52,14 @@ int main(int argc, char **argv) {
 
         time_t _start = time(NULL);
         response r = parse(buff);
-        int status = evaluator(r, db, &topleft_cell, &display_state, &running);
+        int status = evaluator(r, db, &topleft_cell, &running, &display_state);
         time_t _finish = time(NULL);
 
         if (status == -1) continue;
 
         if (display_state) print_spreadsheet(db, topleft_cell);
 
-        printf("[%.1ld] ", _finish - _start);
+        printf("[%.1f] ", difftime(_finish, _start));
         printf("(%s) > ", status_msg[status]);
     }
 
