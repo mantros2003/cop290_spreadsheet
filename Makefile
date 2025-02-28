@@ -1,8 +1,9 @@
-CC = cc
+CC = gcc
 CFLAGS = -Wall -Wextra
 DEBUG = -g
 
-EXEC_NAME = sheet
+BUILD_DIR = target/release
+EXEC_NAME = spreadsheet
 
 SRC_FILES = src/main.c src/_parser.c src/cell.c src/column.c src/database.c src/evaluator.c src/hashset.c src/nodes_ll.c src/print.c src/utils.c
 
@@ -12,8 +13,12 @@ REPORT_NAME = report
 
 all: $(EXEC_NAME)
 
-$(EXEC_NAME):
-	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(SRC_FILES)
+$(EXEC_NAME): $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(DEBUG) -o $(BUILD_DIR)/$@ $(SRC_FILES)
+
+$(BUILD_DIR):
+	mkdir target
+	mkdir $(BUILD_DIR)
 
 report: $(REPORT_DIR)/$(REPORT_NAME).tex
 	$(LATEX_COMP) $(REPORT_DIR)/$(REPORT_NAME).tex

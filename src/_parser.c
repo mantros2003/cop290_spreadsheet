@@ -327,7 +327,7 @@ int ValidPostExpr(char str[], char* EqualExpr, char* PostExpr) {
 		int sum = 0;
 		if( A||B) {
 			if(A) {
-				sum = 2;
+				sum += 2;
 			}
 			int postlength = length-idx-1 ;
 			strncpy(PostExpr, str + idx+1,postlength);
@@ -336,7 +336,7 @@ int ValidPostExpr(char str[], char* EqualExpr, char* PostExpr) {
 			int D = ValidInteger(PostExpr);
 			if(C || D) {
 				if(C) {
-					sum = 3;
+					sum += 1;
 				}
 				return 1+sum ;
 			}
