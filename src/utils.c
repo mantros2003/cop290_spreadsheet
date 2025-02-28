@@ -259,6 +259,7 @@ struct nodes_ll *topo_sort(struct cell *c) {
   }
 
   free_ll(&rev_topo);
+  free_hset(&visited);
 
   return topo_order;
 }

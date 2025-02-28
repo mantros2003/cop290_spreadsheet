@@ -1,5 +1,6 @@
 #include "column.h"
 #include "cell.h"
+#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -83,6 +84,7 @@ void free_segment(struct column_segment **head) {
   struct column_segment *next_ptr;          // Pointer to store the next pointer value
 
   while (curr != NULL) {
+    for (int i = 0; i < SEGMENT_LENGTH; i++) rm_all_dep(&((*head)->segment[i]));
     next_ptr = curr->next;
     free(curr);
     curr = next_ptr;

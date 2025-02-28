@@ -117,5 +117,6 @@ void free_hset(hashset** set) {
     }
   }
 
+  free((*set)->table);
   free(*set);
 }

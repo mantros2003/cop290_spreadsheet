@@ -11,10 +11,10 @@ LATEX_COMP = pdflatex
 REPORT_DIR = docs
 REPORT_NAME = report
 
-all: $(EXEC_NAME)
+all: $(BUILD_DIR)/$(EXEC_NAME)
 
-$(EXEC_NAME): $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(DEBUG) -o $(BUILD_DIR)/$@ $(SRC_FILES)
+$(BUILD_DIR)/$(EXEC_NAME): $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(SRC_FILES)
 
 $(BUILD_DIR):
 	mkdir target
@@ -24,5 +24,8 @@ report: $(REPORT_DIR)/$(REPORT_NAME).tex
 	$(LATEX_COMP) $(REPORT_DIR)/$(REPORT_NAME).tex
 	rm $(REPORT_NAME).aux $(REPORT_NAME).out $(REPORT_NAME).log
 
+run: $(BUILD_DIR)/$(EXEC_NAME)
+	./$(BUILD_DIR)/$(EXEC_NAME) 999 18278
+
 clean:
-	rm $(EXEC_NAME)
+	rm $(BUILD_DIR)/$(EXEC_NAME)
