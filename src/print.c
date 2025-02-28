@@ -61,7 +61,7 @@ void print_spreadsheet(database *db, int top_left_cell) {
 
         for (int j = 0; j < cols; j++) {
             if (has_error(db, top_left_row + i, top_left_col + j)) {
-                printf("%*s", CELL_WIDTH, "Err!");
+                printf("%*s", CELL_WIDTH, "ERR");
             } else {
                 int cell_value = get(db, top_left_row + i, top_left_col + j);
                 printf("%*d", CELL_WIDTH, cell_value);
