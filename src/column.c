@@ -82,12 +82,28 @@ struct cell *get_cell_seg(int row, struct column_segment *head) {
 void free_segment(struct column_segment **head) {
   struct column_segment *curr = *head;      // Pointer to the head of column segment struct to be freed
   struct column_segment *next_ptr;          // Pointer to store the next pointer value
-
+ 
   while (curr != NULL) {
     // First we free all isolated cells in the segment, then remove all dependencies
     for (int i = 0; i < SEGMENT_LENGTH; i++) {
+    // printf("Before: ");
+    // printf("inedges: ");
+    // print_ll((curr->segment[i]).in_edges);
+    // printf("outedges: ");
+    // print_ll((curr->segment[i]).out_edges);
+    
       free_isolated_cells((curr->segment[i]).in_edges);
-      rm_all_dep(&(curr->segment[i]));
+     // printf("start:%d i:%d\n",curr->start_idx,i);
+     // rm_all_dep(&(curr->segment[i]));
+     //print_ll((curr->segment[i]).in_edges);
+     free_ll(&((curr->segment[i]).in_edges));
+     free_ll(&((curr->segment[i]).out_edges));
+     
+    // printf("After: ");
+    // printf("inedges: ");
+    // print_ll((curr->segment[i]).in_edges);
+    // printf("outedges: ");
+    // sprint_ll((curr->segment[i]).out_edges);
     }
 
     next_ptr = curr->next;
