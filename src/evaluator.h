@@ -1,8 +1,8 @@
 #ifndef EVALUATOR_H_
 #define EVALUATOR_H_
 
-struct response;
-struct database;
+#include "_parser.h"
+#include "database.h"
 
 void evaluate(struct cell*);
 
