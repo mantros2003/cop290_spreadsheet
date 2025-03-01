@@ -91,13 +91,16 @@ void free_segment(struct column_segment **head) {
     // print_ll((curr->segment[i]).in_edges);
     // printf("outedges: ");
     // print_ll((curr->segment[i]).out_edges);
-    
+      
+     
+      
       free_isolated_cells((curr->segment[i]).in_edges);
-     // printf("start:%d i:%d\n",curr->start_idx,i);
-     // rm_all_dep(&(curr->segment[i]));
+    // printf("start:%d i:%d\n",curr->start_idx,i);
+     rm_all_dep(&(curr->segment[i]));
+     rm_all_dep2(&(curr->segment[i]));
      //print_ll((curr->segment[i]).in_edges);
-     free_ll(&((curr->segment[i]).in_edges));
-     free_ll(&((curr->segment[i]).out_edges));
+    // free_ll(&((curr->segment[i]).in_edges));
+    // free_ll(&((curr->segment[i]).out_edges));
      
     // printf("After: ");
     // printf("inedges: ");
@@ -114,6 +117,9 @@ void free_segment(struct column_segment **head) {
   // To handle dangling pointers
   *head = NULL;
 }
+
+
+
 
 /*
  * Function to print the data stored in the entire column after the head pointer
