@@ -212,7 +212,7 @@ _Bool traverse(struct cell* curr_cell, hashset* visited, hashset* visiting) {
   return result;
 }
 
-/**
+/*
  * Checks if the connected component component has a cycle
  */
 _Bool contains_cycle(struct nodes_ll *component) {
@@ -247,8 +247,12 @@ struct nodes_ll *topo_sort(struct cell *c) {
   struct nodes_ll *topo_order = NULL;
   hashset *visited = mk_hashset(NULL, HASHTABLE_SIZE);
 
+  // Gets a reverse topological sort ordering from the cell c
+  // Then reverses the order
   struct nodes_ll *rev_topo = dfs_d(c, visited, NULL);
   struct nodes_ll *curr = rev_topo;
+  
+  // Reversing the ordering
   while (curr != NULL) {
     struct nodes_ll *new_node = mk_ll();
     new_node->cell_ptr = curr->cell_ptr;
