@@ -32,6 +32,7 @@ DATA get_data(int idx, struct column_segment *head) {
     head = head->next;
   }
 
+  // The case when the segment where data should be is not initialized, i.e. contains default value 0
   if (head == NULL) return 0;
 
   return (head->segment)[idx % SEGMENT_LENGTH].data;
@@ -69,10 +70,9 @@ void set_data(int idx, DATA data, struct column_segment **head) {
 struct cell *get_cell_seg(int row, struct column_segment *head) {
   while (head != NULL && (row < head->start_idx || row >= head->start_idx + SEGMENT_LENGTH)) head = head->next;
 
-  if (head != NULL) {
-    return &((head->segment)[row % SEGMENT_LENGTH]);
-  }
+  if (head != NULL) return &((head->segment)[row % SEGMENT_LENGTH]);
 
+  // The segment for cell is not initialized
   return NULL;
 }
 
@@ -84,12 +84,18 @@ void free_segment(struct column_segment **head) {
   struct column_segment *next_ptr;          // Pointer to store the next pointer value
 
   while (curr != NULL) {
-    for (int i = 0; i < SEGMENT_LENGTH; i++) rm_all_dep(&((*head)->segment[i]));
+    // First we free all isolated cells in the segment, then remove all dependencies
+    for (int i = 0; i < SEGMENT_LENGTH; i++) {
+      free_isolated_cells((curr->segment[i]).in_edges);
+      rm_all_dep(&(curr->segment[i]));
+    }
+
     next_ptr = curr->next;
     free(curr);
     curr = next_ptr;
   }
 
+  // To handle dangling pointers
   *head = NULL;
 }
 
