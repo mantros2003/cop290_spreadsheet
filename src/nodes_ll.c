@@ -64,6 +64,7 @@ void print_ll(struct nodes_ll *head) {
  * Removes the node which contains the pointer to cell target
  */
 void rm_node_ll(struct nodes_ll **head_node, struct cell *target) {
+
   struct nodes_ll *prev = NULL;
   struct nodes_ll *curr = *head_node;
 
@@ -73,8 +74,8 @@ void rm_node_ll(struct nodes_ll **head_node, struct cell *target) {
         *head_node = curr->next;
       } else {
         prev->next = curr->next;
-        free(curr);
       }
+      free(curr);
 
       break;
     }

@@ -14,7 +14,7 @@ REPORT_NAME = report
 all: $(BUILD_DIR)/$(EXEC_NAME)
 
 $(BUILD_DIR)/$(EXEC_NAME): $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(SRC_FILES)
+	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(SRC_FILES) -lm
 
 $(BUILD_DIR):
 	mkdir target
