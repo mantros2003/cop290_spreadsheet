@@ -110,22 +110,74 @@ if(c == NULL){
 
   //printf("Removing deps %p\n", curr_node);
   while (curr_node != NULL) {
+    if (curr_node->cell_ptr == NULL) {
+    	prev_node = curr_node;
+	    curr_node = curr_node->next;
+	    prev_node->next = NULL;
+	    free(prev_node);
+	 continue;
+    }
     // Removing the out edge from the cell reffered to in this cell
     //printf("cell_ptr:%\n",curr_node->cell_ptr);
     
-    printf("Before: ");
-    printf("inedges: ");
-    print_ll(curr_node->cell_ptr->in_edges);
-    printf("outedges: ");
-    print_ll(curr_node->cell_ptr->out_edges);
+    //printf("Before: ");
+    //printf("inedges: ");
+    //print_ll(curr_node->cell_ptr->in_edges);
+    //printf("outedges: ");
+    //print_ll(curr_node->cell_ptr->out_edges);
     
     rm_node_ll(&((curr_node->cell_ptr)->out_edges), c);
+  
+    //printf("After: ");
+    //printf("inedges: ");
+    //print_ll(curr_node->cell_ptr->in_edges);
+    //printf("outedges: ");
+    //print_ll(curr_node->cell_ptr->out_edges);
+
+    // Traversing the linked list and freeing the nodes
+    prev_node = curr_node;
+    curr_node = curr_node->next;
+    prev_node->next = NULL;
+    free(prev_node);
+  }
+
+  c->oper = ' ';
+  c->in_edges = NULL;
+}
+
+
+void rm_all_dep2(struct cell *c) {
+if(c == NULL){
+	return ;
+}
+  struct nodes_ll *prev_node = NULL;
+  struct nodes_ll *curr_node = c->out_edges;
+
+  //printf("Removing deps %p\n", curr_node);
+  while (curr_node != NULL) {
+    if (curr_node->cell_ptr == NULL) {
+    	prev_node = curr_node;
+	    curr_node = curr_node->next;
+	    prev_node->next = NULL;
+	    free(prev_node);
+	 continue;
+    }
+    // Removing the out edge from the cell reffered to in this cell
+    //printf("cell_ptr:%\n",curr_node->cell_ptr);
     
-    printf("After: ");
-    printf("inedges: ");
-    print_ll(curr_node->cell_ptr->in_edges);
-    printf("outedges: ");
-    print_ll(curr_node->cell_ptr->out_edges);
+    //printf("Before: ");
+    //printf("inedges: ");
+    //print_ll(curr_node->cell_ptr->in_edges);
+    //printf("outedges: ");
+    //print_ll(curr_node->cell_ptr->out_edges);
+    
+    rm_node_ll(&((curr_node->cell_ptr)->in_edges), c);
+  
+    //printf("After: ");
+    //printf("inedges: ");
+    //print_ll(curr_node->cell_ptr->in_edges);
+    //printf("outedges: ");
+    //print_ll(curr_node->cell_ptr->out_edges);
 
     // Traversing the linked list and freeing the nodes
     prev_node = curr_node;

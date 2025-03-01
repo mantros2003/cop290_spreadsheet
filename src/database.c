@@ -61,10 +61,15 @@ _Bool has_error(database *db, int row, int col) {
  * Helper function to free the memory
  */
 void free_db(database **db) {
-  for (int i = 0; i < (*db)->num_cols; i++) free_segment(&((*db)->cols[i]));
+  for (int i = 0; i < (*db)->num_cols; i++) {
+   
+    free_segment(&((*db)->cols[i]));
+  }
+ 
   free((*db)->cols);
   free(*db);
 }
+
 
 // int main() {
 //   int num_cols = 10;

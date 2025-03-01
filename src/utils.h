@@ -18,6 +18,8 @@ void add_dep_ll(struct nodes_ll*, struct cell*);
 
 void rm_all_dep(struct cell*);
 
+void rm_all_dep2(struct cell*);
+
 struct nodes_ll *dfs_ud(struct cell*, hashset*, struct nodes_ll*);
 
 struct nodes_ll *dfs_d(struct cell*, hashset*, struct nodes_ll*);

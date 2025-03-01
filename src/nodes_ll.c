@@ -67,22 +67,27 @@ void rm_node_ll(struct nodes_ll **head_node, struct cell *target) {
 
   struct nodes_ll *prev = NULL;
   struct nodes_ll *curr = *head_node;
-
+  
   while (curr != NULL) {
     if (target == curr->cell_ptr) {
       if (prev == NULL) {
         *head_node = curr->next;
       } else {
         prev->next = curr->next;
+        
       }
+      
+      curr->next = NULL;
       free(curr);
 
       break;
+      
     }
-
+   
     prev = curr;
     curr = curr->next;
   }
+ 
 }
 
 struct nodes_ll *copy_ll(struct nodes_ll *node) {
