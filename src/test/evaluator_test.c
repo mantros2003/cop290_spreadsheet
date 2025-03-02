@@ -147,7 +147,7 @@ void test_evaluator_binary_div_zero() {
     _Bool running = true, display_state = true;
     response r = {0};
     r.func = 6; r.arg1 = 100; r.arg2 = 0; r.arg_type = 0; r.target = 1001;
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
+    evaluator(r, db, &topleft, &running, &display_state);
     struct cell *c = get_cell(db, 0, 0);
     // Division by zero should set an error flag.
     assert(c->error != 0);
@@ -161,7 +161,7 @@ void test_evaluator_sleep_immediate() {
     _Bool running = true, display_state = true;
     response r = {0};
     r.func = 12; r.arg1 = 2; r.arg_type = 0; r.target = 1001;
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
+    evaluator(r, db, &topleft, &running, &display_state);
     struct cell *c = get_cell(db, 0, 0);
     // With no dependency, sleep_fn should set target->data to r.arg1.
     assert(c->data == 2);

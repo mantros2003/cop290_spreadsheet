@@ -5,10 +5,14 @@ LDFLAGS = -lm  # Add math library if needed
 
 # Directories
 SRC_DIR = src
-TEST_DIR = $(SRC_DIR)/TESTINGCODES
+TEST_DIR = $(SRC_DIR)/test
 TARGET_DIR = target
 RELEASE_DIR = $(TARGET_DIR)/release
 TEST_BUILD_DIR = $(TARGET_DIR)/tests
+
+LATEX_COMP = pdflatex
+REPORT_DIR = docs
+REPORT_NAME = report
 
 # Ensure necessary directories exist
 $(shell mkdir -p $(RELEASE_DIR) $(TEST_BUILD_DIR))
@@ -34,6 +38,11 @@ $(RELEASE_DIR)/main.o: $(SRC_DIR)/main.c
 
 $(RELEASE_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+report: $(REPORT_DIR)/$(REPORT_NAME).tex
+	$(LATEX_COMP) $(REPORT_DIR)/$(REPORT_NAME).tex
+	rm $(REPORT_NAME).aux $(REPORT_NAME).out $(REPORT_NAME).log
+
 
 # Run the program
 run: $(TARGET)
