@@ -260,7 +260,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
   if (r.func >= 13 && r.func <= 16) return 0;
 
   // Now all functions have a target
-  if (!cell_in_range(db, r.target - 1001)) return 2;   // Check the error code
+  if (!cell_in_range(db, r.target - 1001)) return 4;   // Check the error code
 
   // scroll_to function
   if (r.func == 20) {
@@ -275,7 +275,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
 
   // Can refactor such that all topological ordering is done commonly
   // Checks if cells are in range
-  if (((r.arg_type & 2) && !cell_in_range(db, r.arg1)) || ((r.arg_type & 1) && !cell_in_range(db, r.arg1))) return 2;   // Error code
+  if (((r.arg_type & 2) && !cell_in_range(db, r.arg1 - 1001)) || ((r.arg_type & 1) && !cell_in_range(db, r.arg1 - 1001))) return 4;   // Error code
 
   // Store the old state of the cell to restore the cell in case of cycle
   struct nodes_ll *copy_dep = copy_ll(target->in_edges);

@@ -193,8 +193,11 @@ int ValidCell3(char str[]) {
 		idx++ ;
 	}
 	if( idx > 0 && idx < length ) {
-		char sub1[4] ;
-		char sub2[4] ;
+		char sub1[4];
+		char sub2[4];
+
+		if (length - idx > 3) return 0;
+
 		strncpy(sub2, str + idx, length-idx);
 		strncpy(sub1, str + 0, idx);
 		sub1[idx] = '\0';
@@ -322,7 +325,7 @@ int ValidPostExpr(char str[], char* EqualExpr, char* PostExpr) {
 		}
 		strncpy(EqualExpr, str + 0, idx);
 		EqualExpr[idx] = '\0';
-		int A = ValidCell2(EqualExpr);
+		int A = ValidCell3(EqualExpr);
 		int B = ValidInteger(EqualExpr) ;
 		int sum = 0;
 		if( A||B) {
@@ -332,7 +335,7 @@ int ValidPostExpr(char str[], char* EqualExpr, char* PostExpr) {
 			int postlength = length-idx-1 ;
 			strncpy(PostExpr, str + idx+1,postlength);
 			PostExpr[postlength] = '\0';
-			int C = ValidCell2(PostExpr);
+			int C = ValidCell3(PostExpr);
 			int D = ValidInteger(PostExpr);
 			if(C || D) {
 				if(C) {
@@ -378,7 +381,7 @@ int ParseFunc(char str[],char EqualExpr[], char Exp1[],char Exp2[]) {
 	strncpy(Range, str + count+1,length);
 	Range[length] = '\0';
 	if( func == 6) {
-		if(ValidInteger(Range)||ValidCell2(Range)) {
+		if(ValidInteger(Range)||ValidCell3(Range)) {
 			int len1 = strlen(Function);
 			strncpy(EqualExpr, str + 0, len1);
 			EqualExpr[len1] = '\0';
@@ -585,7 +588,7 @@ response parse(char str[]) {
 					Returns.arg_type = 3 ;
 					return Returns ;
 				} else if( ret == 1 ) {
-					Returns.status = 1;        // Error code
+					Returns.status = 2;        // Error code
 					return Returns ;
 				}
 
