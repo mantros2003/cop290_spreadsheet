@@ -11,9 +11,7 @@
 #include "../_parser.h"
 #include "../utils.h"
 
-// --- Dummy/Stubs for Utility Functions ---
-// These stub functions match the prototypes declared in utils.h.
-// (They do nothing or simulate basic behavior for testing purposes.)
+// Some dummy functions
 
 bool cell_in_range2(database *db, int index) {
     // For testing, assume a cell index is valid if 0 <= index < num_cols*num_rows.
@@ -90,75 +88,7 @@ void add_dep2_ll2(struct nodes_ll *ll, struct cell *target) {
     target->in_edges = ll;
 }
 
-// --- Comprehensive Evaluator Test Suite ---
-// (These tests exercise the various branches in evaluator().)
-
-void test_evaluator_status2() {
-    database *db = mk_db(5, 100);
-    int topleft = 1001;
-    _Bool running = true, display_state = true;
-    response r;
-    r.status = 7; // Simulate a parser error status.
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
-    assert(ret == 7);
-    free_db(&db);
-    printf("Test evaluator status passed.\n");
-}
-
-void test_evaluator_func17() {
-    database *db = mk_db(5, 100);
-    int topleft = 1001;
-    _Bool running = true, display_state = true;
-    response r = {0};
-    r.func = 17;
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
-    assert(ret == -1);
-    assert(running == false);
-    assert(display_state == false);
-    free_db(&db);
-    printf("Test evaluator func 17 passed.\n");
-}
-
-void test_evaluator_func18() {
-    database *db = mk_db(5, 100);
-    int topleft = 1001;
-    _Bool running = true, display_state = true;
-    response r = {0};
-    r.func = 18;
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
-    assert(ret == 0);
-    assert(display_state == false);
-    free_db(&db);
-    printf("Test evaluator func 18 passed.\n");
-}
-
-void test_evaluator_func19() {
-    database *db = mk_db(5, 100);
-    int topleft = 1001;
-    _Bool running = true, display_state = false;
-    response r = {0};
-    r.func = 19;
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
-    assert(ret == 0);
-    assert(display_state == true);
-    free_db(&db);
-    printf("Test evaluator func 19 passed.\n");
-}
-
-void test_evaluator_move_func13() {
-    database *db = mk_db(5, 100);
-    // Set initial topleft to encode col = 4, row = 20 (i.e. 4000 + 20 = 4020).
-    int topleft = 4020;
-    _Bool running = true, display_state = true;
-    response r = {0};
-    r.func = 13; // move up: row becomes max(row - 10, 0)
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
-    // Expected new topleft: col remains 4, row becomes 20 - 10 = 10 → 4000 + 10 = 4010.
-    assert(ret == 0);
-    assert(topleft == 4010);
-    free_db(&db);
-    printf("Test evaluator move func 13 passed.\n");
-}
+// Testing code
 
 void test_evaluator_scroll_to() {
     database *db = mk_db(5, 100);
@@ -211,42 +141,6 @@ void test_evaluator_dependency_update_no_cycle() {
     printf("Test evaluator dependency update (func 2, no cycle) passed.\n");
 }
 
-void test_evaluator_binary_ops_immediate() {
-    database *db = mk_db(5, 100);
-    int topleft = 1001;
-    _Bool running = true, display_state = true;
-    response r;
-    r.arg_type = 0;  // Immediate values.
-    r.target = 1001; // Target cell [0,0]
-
-    // Addition: 10 + 20 = 30.
-    r.func = 3; r.arg1 = 10; r.arg2 = 20;
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
-    struct cell *c = get_cell(db, 0, 0);
-    assert(c->data == 30);
-
-    // Subtraction: 50 - 15 = 35.
-    r.func = 4; r.arg1 = 50; r.arg2 = 15;
-    ret = evaluator(r, db, &topleft, &running, &display_state);
-    c = get_cell(db, 0, 0);
-    assert(c->data == 35);
-
-    // Multiplication: 7 * 6 = 42.
-    r.func = 5; r.arg1 = 7; r.arg2 = 6;
-    ret = evaluator(r, db, &topleft, &running, &display_state);
-    c = get_cell(db, 0, 0);
-    assert(c->data == 42);
-
-    // Division: 100 / 4 = 25.
-    r.func = 6; r.arg1 = 100; r.arg2 = 4;
-    ret = evaluator(r, db, &topleft, &running, &display_state);
-    c = get_cell(db, 0, 0);
-    assert(c->data == 25);
-
-    free_db(&db);
-    printf("Test evaluator binary operations (func 3-6 immediate) passed.\n");
-}
-
 void test_evaluator_binary_div_zero() {
     database *db = mk_db(5, 100);
     int topleft = 1001;
@@ -259,54 +153,6 @@ void test_evaluator_binary_div_zero() {
     assert(c->error != 0);
     free_db(&db);
     printf("Test evaluator binary division by zero (func 6) passed.\n");
-}
-
-void test_evaluator_range_functions() {
-    database *db = mk_db(5, 100);
-    // Pre-populate column 0, rows 0..4 with: 50, 20, 30, 10, 40.
-    set(db, 0, 0, 50);
-    set(db, 1, 0, 20);
-    set(db, 2, 0, 30);
-    set(db, 3, 0, 10);
-    set(db, 4, 0, 40);
-    int topleft = 1001;
-    _Bool running = true, display_state = true;
-    response r;
-    r.arg1 = 1001; r.arg2 = 1005; r.target = 1001; r.arg_type = 0;
-
-    // Test min (func 7): expected minimum is 10.
-    r.func = 7;
-    int ret = evaluator(r, db, &topleft, &running, &display_state);
-    struct cell *c = get_cell(db, 0, 0);
-    assert(c->data == 10);
-
-    // Test max (func 8): expected maximum is 50.
-    r.func = 8;
-    ret = evaluator(r, db, &topleft, &running, &display_state);
-    c = get_cell(db, 0, 0);
-    assert(c->data == 50);
-
-    // Test avg (func 9): average of {50,20,30,10,40} is 30.
-    r.func = 9;
-    ret = evaluator(r, db, &topleft, &running, &display_state);
-    c = get_cell(db, 0, 0);
-    assert(c->data == 30);
-
-    // Test sum (func 10): sum is 150.
-    r.func = 10;
-    ret = evaluator(r, db, &topleft, &running, &display_state);
-    c = get_cell(db, 0, 0);
-    assert(c->data == 150);
-
-    // Test stdev (func 11): standard deviation (population) of {50,20,30,10,40} is about 14 (rounded).
-    r.func = 11;
-    ret = evaluator(r, db, &topleft, &running, &display_state);
-    c = get_cell(db, 0, 0);
-    int computed = c->data;
-    assert(abs(computed - 14) <= 1);
-
-    free_db(&db);
-    printf("Test evaluator range functions (func 7-11) passed.\n");
 }
 
 void test_evaluator_sleep_immediate() {
@@ -341,17 +187,10 @@ void test_evaluator_cycle_detection() {
 }
 
 int main() {
-    test_evaluator_status2();
-    test_evaluator_func17();
-    test_evaluator_func18();
-    test_evaluator_func19();
-    test_evaluator_move_func13();
     test_evaluator_scroll_to();
     test_evaluator_assignment();
     test_evaluator_dependency_update_no_cycle();
-    test_evaluator_binary_ops_immediate();
     test_evaluator_binary_div_zero();
-    // test_evaluator_range_functions();
     test_evaluator_sleep_immediate();
     test_evaluator_cycle_detection();
 

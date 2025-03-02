@@ -65,6 +65,7 @@ void free_db(database **db) {
  
   free((*db)->cols);
   free(*db);
+  *db = NULL;
 }
 
 

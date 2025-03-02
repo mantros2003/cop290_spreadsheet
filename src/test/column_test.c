@@ -3,7 +3,7 @@
 #include <assert.h>
 #include "../column.h"
 #include "../cell.h"
-#include "../utils.h"  // Include if needed for rm_all_dep or other utilities
+#include "../utils.h"
 
 // Test 1: Test that make_segment() creates a valid segment with default values.
 void test1_make_segment() {
@@ -273,13 +273,12 @@ int main() {
     // test12_set_data_boundary_start();
     test13_free_segment_single();
     test14_free_segment_multiple();
-    // test15_consistency();
+    test15_consistency();
     test16_get_cell_seg_sequence();
     test17_update_same_index();
     test18_get_data_unallocated_index();
     test19_set_data_large_index();
-    // test20_segment_order();
+    test20_segment_order();
 
-    printf("All tests passed.\n");
     return 0;
 }

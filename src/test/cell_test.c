@@ -239,7 +239,6 @@ int main() {
     test18_large_data();
     test19_error_assignment();
     test20_combination();
-
-    printf("All tests passed.\n");
+    
     return 0;
 }

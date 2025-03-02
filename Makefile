@@ -1,31 +1,57 @@
+# Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra
-DEBUG = -g
+CFLAGS = -Wall -Wextra -g
+LDFLAGS = -lm  # Add math library if needed
 
-BUILD_DIR = target/release
-EXEC_NAME = spreadsheet
+# Directories
+SRC_DIR = src
+TEST_DIR = $(SRC_DIR)/TESTINGCODES
+TARGET_DIR = target
+RELEASE_DIR = $(TARGET_DIR)/release
+TEST_BUILD_DIR = $(TARGET_DIR)/tests
 
-SRC_FILES = src/main.c src/_parser.c src/cell.c src/column.c src/database.c src/evaluator.c src/hashset.c src/nodes_ll.c src/print.c src/utils.c
+# Ensure necessary directories exist
+$(shell mkdir -p $(RELEASE_DIR) $(TEST_BUILD_DIR))
 
-LATEX_COMP = pdflatex
-REPORT_DIR = docs
-REPORT_NAME = report
+# Program target
+TARGET = $(RELEASE_DIR)/spreadsheet
 
-all: $(BUILD_DIR)/$(EXEC_NAME)
+# Source and object files
+SRC_FILES = $(filter-out $(SRC_DIR)/main.c, $(wildcard $(SRC_DIR)/*.c))
+SRC_OBJ = $(patsubst $(SRC_DIR)/%.c, $(RELEASE_DIR)/%.o, $(SRC_FILES))
 
-$(BUILD_DIR)/$(EXEC_NAME): $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(SRC_FILES) -lm
+# Test files
+TEST_SRC = $(wildcard $(TEST_DIR)/*.c)
+TEST_OBJ = $(patsubst $(TEST_DIR)/%.c, $(TEST_BUILD_DIR)/%.o, $(TEST_SRC))
+TEST_BIN = $(patsubst $(TEST_DIR)/%.c, $(TEST_BUILD_DIR)/%, $(TEST_SRC))
 
-$(BUILD_DIR):
-	mkdir target
-	mkdir $(BUILD_DIR)
+# Compile the main program
+$(TARGET): $(SRC_OBJ) $(RELEASE_DIR)/main.o
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-report: $(REPORT_DIR)/$(REPORT_NAME).tex
-	$(LATEX_COMP) $(REPORT_DIR)/$(REPORT_NAME).tex
-	rm $(REPORT_NAME).aux $(REPORT_NAME).out $(REPORT_NAME).log
+$(RELEASE_DIR)/main.o: $(SRC_DIR)/main.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-run: $(BUILD_DIR)/$(EXEC_NAME)
-	./$(BUILD_DIR)/$(EXEC_NAME) 999 18278
+$(RELEASE_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
+# Run the program
+run: $(TARGET)
+	@$(TARGET) 999 18278
+
+# Compile and link test files
+$(TEST_BUILD_DIR)/%: $(TEST_DIR)/%.c $(SRC_OBJ)
+	$(CC) $(CFLAGS) $< $(SRC_OBJ) -o $@ $(LDFLAGS)
+
+# Run all tests
+test: $(TEST_BIN)
+	@echo "Running tests..."
+	@for test in $(TEST_BIN); do \
+		echo "Executing $$test..."; \
+		./$$test; \
+		echo ""; \
+	done
+
+# Clean build artifacts
 clean:
-	rm $(BUILD_DIR)/$(EXEC_NAME)
+	rm -rf $(TARGET_DIR)
