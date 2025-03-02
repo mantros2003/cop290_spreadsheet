@@ -16,9 +16,9 @@ void add_dep_range(database*, int, int, int, char);
 
 void add_dep_ll(struct nodes_ll*, struct cell*);
 
-void rm_all_dep(struct cell*);
+void rm_in_edges(struct cell*);
 
-void rm_all_dep2(struct cell*);
+void rm_out_edges(struct cell*);
 
 struct nodes_ll *dfs_ud(struct cell*, hashset*, struct nodes_ll*);
 

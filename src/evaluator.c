@@ -35,6 +35,7 @@ void evaluate(struct cell *c) {
     right = c->in_edges->cell_ptr;
     left = c->in_edges->next->cell_ptr;
 
+    // Set error if any of right or left has error
     if (right->error || left->error) {
       c->error = 1;
       return;
@@ -89,13 +90,14 @@ void sleep_fn(struct cell *target) {
   }
 
   // If dependency
+  // If dependency has error, then set error
   if (target->in_edges->cell_ptr->error) target->error = 1;
-  else if (target->in_edges->cell_ptr->data >= 0) {
-    sleep(target->in_edges->cell_ptr->data);
+  else {
+    if (target->in_edges->cell_ptr->data >= 0) sleep(target->in_edges->cell_ptr->data);
+
     target->data = target->in_edges->cell_ptr->data;
     target->error = 0;
   }
-  else target->error = 0;
 }
 
 /*
@@ -106,6 +108,7 @@ void max_fn(struct cell* target) {
 
   struct nodes_ll *node = target->in_edges;
   while (node != NULL) {
+    // If any dependency has error, set error
     if (node->cell_ptr->error) {
       target->error = 1;
       return;
@@ -127,6 +130,7 @@ void min_fn(struct cell* target) {
 
   struct nodes_ll *node = target->in_edges;
   while (node != NULL) {
+    // If any dependency has error, set error
     if (node->cell_ptr->error) {
       target->error = 1;
       return;
@@ -148,6 +152,7 @@ void sum_fn(struct cell* target) {
 
   struct nodes_ll *node = target->in_edges;
   while (node != NULL) {
+    // If any dependency has error, set error
     if (node->cell_ptr->error) {
       target->error = 1;
       return;
@@ -169,6 +174,7 @@ void avg_fn(struct cell* target) {
 
   struct nodes_ll *node = target->in_edges;
   while (node != NULL) {
+    // If any dependency has error, set error
     if (node->cell_ptr->error) {
       target->error = 1;
       return;
@@ -197,6 +203,7 @@ void stdev_fn(struct cell* target) {
 
   struct nodes_ll *node = target->in_edges;
   while (node != NULL) {
+    // If any dependency has error, set error
     if (node->cell_ptr->error) {
       target->error = 1;
       return;
@@ -221,6 +228,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
   if (r.status) return r.status;
 
   // Checking functions that don't have a target
+  // Command: q
   if (r.func == 17) {
     *running = 0;
     *display_state = 0;
@@ -228,16 +236,19 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
     return -1;
   }
 
+  // Command: disable_output
   if (r.func == 18) {
     *display_state = 0;
     return 0;
   }
 
+  // Command: enable_output 
   if (r.func == 19) {
     *display_state = 1;
     return 0;
   }
 
+  // Commands: wasd
   int col = *topleft / 1000, row = *topleft % 1000;
   if (r.func == 13) row = (row - 10 < 0) ? 0 : row - 10;
   if (r.func == 14) col = (col + 20 > db->num_cols) ? ((db->num_cols - 10 < 0) ? 0: db->num_cols - 10) : col + 10;
@@ -257,76 +268,36 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
     return 0;
   }
 
+  // Check if target is initialized, and then get cell's pointer
+  // If not initialized, set with data 0
   if (get_cell(db, r.target / 1000 - 1, r.target % 1000 - 1) == NULL) set(db, r.target % 1000 - 1, r.target / 1000 - 1, 0);
   struct cell *target = get_cell(db, r.target / 1000 - 1, r.target % 1000 - 1);
 
   // Can refactor such that all topological ordering is done commonly
-  if (r.func == 1) {
-    rm_all_dep(target);
-    set(db, r.target % 1000 - 1, r.target / 1000 - 1, r.arg1);
-    target->oper = r.func;
-    target->error = 0;
-
-    struct nodes_ll *topo_order = topo_sort(target);
-    struct nodes_ll *curr = topo_order;
-
-    while (curr != NULL) {
-      evaluate(curr->cell_ptr);
-      curr = curr->next;
-    }
-
-    free_ll(&topo_order);
-
-    return 0;
-  }
-
-  if (r.func == 2) {
-    if (!cell_in_range(db, r.arg1 - 1001)) return 2;     // Error code
-
-    struct nodes_ll *copy_dep = copy_ll(target->in_edges);                                // Take a copy of old dependencies
-    char oper_old = target->oper;
-    _Bool error_old = target->error;
-    rm_all_dep(target);                                                                   // Remove dependencies from target
-    add_dependency(db, r.arg1 - 1001, r.target - 1001, r.func);
-
-    struct nodes_ll *node = connected_component(get_cell(db, r.target / 1000 - 1, r.target % 1000 - 1));
-    _Bool has_cycle = contains_cycle(node);
-
-    if (has_cycle) {
-      rm_all_dep(target);
-      add_dep_ll(copy_dep, target);
-      target->oper = oper_old;
-      target->error = error_old;
-
-      free_ll(&copy_dep);
-      free_ll(&node);
-
-      return 3;                     // Error code
-    }
-
-    free_ll(&copy_dep);
-    free_ll(&node);
-
-    struct nodes_ll *topo_order = topo_sort(target);
-    struct nodes_ll *curr = topo_order;
-
-    while (curr != NULL) {
-      evaluate(curr->cell_ptr);
-      curr = curr->next;
-    }
-
-    free_ll(&topo_order);
-    return 0;
-  }
-
+  // Checks if cells are in range
   if (((r.arg_type & 2) && !cell_in_range(db, r.arg1)) || ((r.arg_type & 1) && !cell_in_range(db, r.arg1))) return 2;   // Error code
 
+  // Store the old state of the cell to restore the cell in case of cycle
   struct nodes_ll *copy_dep = copy_ll(target->in_edges);
   char old_oper = target->oper;
   char old_error = target->error;
-  rm_all_dep(target);
+  rm_in_edges(target);
 
+  // Simple value assignment to cell, e.g. A1=1
+  if (r.func == 1) {
+    set(db, r.target % 1000 - 1, r.target / 1000 - 1, r.arg1);
+    target->oper = r.func;
+    target->error = 0;
+  }
+
+  // Single dependency, e.g. A1=B1
+  if (r.func == 2) {
+    add_dependency(db, r.arg1 - 1001, r.target - 1001, r.func);
+  }
+
+  // Command: +, -, *, /
   if (r.func >= 3 && r.func <= 6) {
+    // Case when both args are ints
     if ((r.arg_type & 2) == 0 && (r.arg_type & 1) == 0) {
       if (r.func == 3) target->data = r.arg1 + r.arg2;
       if (r.func == 4) target->data = r.arg1 - r.arg2;
@@ -335,46 +306,49 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
         if (r.arg2 == 0) target->error = 1;
         else target->data = r.arg1 / r.arg2;
       }
+    } else {
+      // Check if arg1 is cell or int
+      if (r.arg_type & 2) add_dependency(db, r.arg1 - 1001, r.target - 1001, r.func);
+      else {
+        struct cell* c = mk_isolated_cell();
+        c->data = r.arg1;
+        add_dep(c, target, r.func);
+      }
 
-      free_isolated_cells(copy_dep);
-      free_ll(&copy_dep);
-      return 0;
-    }
-    if (r.arg_type & 2) add_dependency(db, r.arg1 - 1001, r.target - 1001, r.func);
-    else {
-      struct cell* c = mk_isolated_cell();
-      c->data = r.arg1;
-      add_dep(c, target, r.func);
-    }
-
-    if (r.arg_type & 1) add_dependency(db, r.arg2 - 1001, r.target - 1001, r.func);
-    else {
-      struct cell* c = mk_isolated_cell();
-      c->data = r.arg2;
-      add_dep(c, target, r.func);
+      // Checks if arg2 is cell or int
+      if (r.arg_type & 1) add_dependency(db, r.arg2 - 1001, r.target - 1001, r.func);
+      else {
+        struct cell* c = mk_isolated_cell();
+        c->data = r.arg2;
+        add_dep(c, target, r.func);
+      }
     }
   }
 
+  // Command: MIN, MAX, SUM, AVG, STDEV
   if (r.func >= 7 && r.func <= 11) {
     add_dep_range(db, r.target - 1001, r.arg1 - 1001, r.arg2 - 1001, r.func);
   }
 
+  // Command: SLEEP
   if (r.func == 12) {
+    // If arg1 is cell, add dependency else set data to arg
     if (r.arg_type & 2) {
       add_dependency(db, r.arg1 - 1001, r.target - 1001, r.func);
-    }
-    else {
+    } else {
       target->data = r.arg1;
       target->oper = r.func;
     }
   }
 
+  // Compute the connected component of the target cell and check if there is a cycle
   struct nodes_ll *dep_graph = connected_component(target);
   _Bool has_cycle = contains_cycle(dep_graph);
 
+  // If a cycle is detected, remove the new dependecies and restore the old dependencies
   if (has_cycle) {
     free_isolated_cells(target->in_edges);
-    rm_all_dep(target);
+    rm_in_edges(target);
     add_dep_ll(copy_dep, target);
     target->oper = old_oper;
     target->error = old_error;
@@ -385,13 +359,16 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
     return 3;                   // Error code
   }
 
+  // Freeing some objects no longer needed
   free_isolated_cells(copy_dep);
   free_ll(&dep_graph);
   free_ll(&copy_dep);
 
+  // Compute topological sort order
   struct nodes_ll *topo_order = topo_sort(target);
   struct nodes_ll *curr = topo_order;
 
+  // Traverse the graph in topological sort order and evaluate each cell
   while (curr != NULL) {
     evaluate(curr->cell_ptr);
     curr = curr->next;

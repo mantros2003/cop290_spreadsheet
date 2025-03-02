@@ -100,41 +100,28 @@ void add_dep_ll(struct nodes_ll *ll, struct cell *to) {
 
 /*
  * Function to remove all in_edges from cell
+ * Also removes all the cell from all out_edges
  */
-void rm_all_dep(struct cell *c) {
-if(c == NULL){
-	return ;
-}
+void rm_in_edges(struct cell *c) {
+  if (c == NULL) return;
+
   struct nodes_ll *prev_node = NULL;
   struct nodes_ll *curr_node = c->in_edges;
 
-  //printf("Removing deps %p\n", curr_node);
   while (curr_node != NULL) {
+    // curr_node->cell_ptr is NULL only in the case of isolated cell
     if (curr_node->cell_ptr == NULL) {
     	prev_node = curr_node;
 	    curr_node = curr_node->next;
 	    prev_node->next = NULL;
-	    free(prev_node);
-	 continue;
-    }
-    // Removing the out edge from the cell reffered to in this cell
-    //printf("cell_ptr:%\n",curr_node->cell_ptr);
-    
-    //printf("Before: ");
-    //printf("inedges: ");
-    //print_ll(curr_node->cell_ptr->in_edges);
-    //printf("outedges: ");
-    //print_ll(curr_node->cell_ptr->out_edges);
-    
-    rm_node_ll(&((curr_node->cell_ptr)->out_edges), c);
-  
-    //printf("After: ");
-    //printf("inedges: ");
-    //print_ll(curr_node->cell_ptr->in_edges);
-    //printf("outedges: ");
-    //print_ll(curr_node->cell_ptr->out_edges);
 
-    // Traversing the linked list and freeing the nodes
+	    free(prev_node);
+
+      continue;
+    }
+
+    rm_node_ll(&((curr_node->cell_ptr)->out_edges), c);
+
     prev_node = curr_node;
     curr_node = curr_node->next;
     prev_node->next = NULL;
@@ -145,41 +132,28 @@ if(c == NULL){
   c->in_edges = NULL;
 }
 
+/*
+ * Function to remove all out_edges from cell
+ * Also removes all the cell from all in_edges
+ */
+void rm_out_edges(struct cell *c) {
+  // curr_node->cell_ptr is NULL only in the case of isolated cell
+  if(c == NULL) return;
 
-void rm_all_dep2(struct cell *c) {
-if(c == NULL){
-	return ;
-}
   struct nodes_ll *prev_node = NULL;
   struct nodes_ll *curr_node = c->out_edges;
 
-  //printf("Removing deps %p\n", curr_node);
   while (curr_node != NULL) {
     if (curr_node->cell_ptr == NULL) {
-    	prev_node = curr_node;
-	    curr_node = curr_node->next;
-	    prev_node->next = NULL;
-	    free(prev_node);
-	 continue;
+      prev_node = curr_node;
+      curr_node = curr_node->next;
+      prev_node->next = NULL;
+      free(prev_node);
+      continue;
     }
-    // Removing the out edge from the cell reffered to in this cell
-    //printf("cell_ptr:%\n",curr_node->cell_ptr);
-    
-    //printf("Before: ");
-    //printf("inedges: ");
-    //print_ll(curr_node->cell_ptr->in_edges);
-    //printf("outedges: ");
-    //print_ll(curr_node->cell_ptr->out_edges);
-    
-    rm_node_ll(&((curr_node->cell_ptr)->in_edges), c);
-  
-    //printf("After: ");
-    //printf("inedges: ");
-    //print_ll(curr_node->cell_ptr->in_edges);
-    //printf("outedges: ");
-    //print_ll(curr_node->cell_ptr->out_edges);
 
-    // Traversing the linked list and freeing the nodes
+    rm_node_ll(&((curr_node->cell_ptr)->in_edges), c);
+
     prev_node = curr_node;
     curr_node = curr_node->next;
     prev_node->next = NULL;
@@ -351,7 +325,7 @@ _Bool cell_in_range(database *db, int cell) {
  */
 void free_isolated_cells(struct nodes_ll *dep) {
   while (dep != NULL) {
-    if (dep->cell_ptr != NULL && dep->cell_ptr->oper == -1) {
+    if (dep->cell_ptr->oper == -1) {
     	free_ll(&(dep->cell_ptr->out_edges));
     	free(dep->cell_ptr);
     	dep->cell_ptr = NULL;
