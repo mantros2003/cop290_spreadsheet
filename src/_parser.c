@@ -196,7 +196,7 @@ int ValidCell3(char str[]) {
 		char sub1[4];
 		char sub2[4];
 
-		if (length - idx > 3) return 0;
+		if (length - idx > 3 && idx >= 4) return 0;
 
 		strncpy(sub2, str + idx, length-idx);
 		strncpy(sub1, str + 0, idx);
