@@ -3,6 +3,9 @@
 #include <string.h>
 #include "_parser.h"
 
+/*
+* FUnction that prints response
+*/
 void print_resp(response r) {
    printf("%d ",r.status);
 	printf("%d ",r.func);
@@ -13,7 +16,9 @@ void print_resp(response r) {
    printf("\n");
 }
 
-//Substring function
+/*
+ * Returns substring of str in the given substr char ponter 
+ */
 void substring(char * str, char * substr, int start, int length) {
   if (start < 0 || (unsigned int)start >= strlen(str)) {
     substr[0] = '\0';
@@ -24,7 +29,9 @@ void substring(char * str, char * substr, int start, int length) {
   return;
 }
 
-//Valid Row (1 to 999)
+/*
+ * Function to determine given row (string) is correct   
+ */
 int ValidRow(char str[]) {
    int length = strlen(str);
    if (length > 3 || length == 0) {
@@ -40,6 +47,11 @@ int ValidRow(char str[]) {
    }
    return 1;
 }
+
+/*
+ * Function to determine given row (string) 
+ * is correct returns the value of row  
+ */
 
 int ValidRow2(char str[]) {
 	int length = strlen(str);
@@ -57,7 +69,9 @@ int ValidRow2(char str[]) {
 	return atoi(str);
 }
 
-//Valid Row (A to ZZZ)
+/*
+ * Function to determine given column (string) is correct   
+ */
 int ValidColumn(char str[]) {
 	int length = strlen(str) ;
 	if(length > 3 || length == 0) {
@@ -70,6 +84,11 @@ int ValidColumn(char str[]) {
 	}
 	return 1 ;
 }
+
+/*
+ * Function to determine given column (string) 
+ * is correct returns the value of row  
+ */
 
 int ValidColumn2(char str[]) {
 	int length = strlen(str) ;
@@ -87,7 +106,10 @@ int ValidColumn2(char str[]) {
 	return ans ;
 }
 
-//Valid Integer
+/*
+ * Function to determine given integer (string) is correct   
+ */
+
 int ValidInteger(char str[]) {
 	int length = strlen(str) ;
 	if(length == 0) {
@@ -126,7 +148,11 @@ int ValidInteger(char str[]) {
 	}
 }
 
-//Valid cell representation returns args
+/*
+ * Function to determine given cell is correct 
+ * returns row and column in sub1 and sub2  
+ */
+
 int ValidCell(char str[], char* sub1, char* sub2) {
 	int length = strlen(str) ;
 	if( length < 2 || length > 6 ) {
@@ -153,7 +179,11 @@ int ValidCell(char str[], char* sub1, char* sub2) {
 	return 0 ;
 }
 
-//Valid cell representation check
+/*
+ * Function to determine given cell is correct 
+ * returns 1 for correct 0 for incorrect cell
+ */
+
 int ValidCell2(char str[]) {
 	int length = strlen(str) ;
 	if(length < 2 || length > 6) {
@@ -179,6 +209,12 @@ int ValidCell2(char str[]) {
 	}
 	return 0 ;
 }
+
+/*
+ * Function to determine given cell is correct 
+ * returns value of the cell (int)  
+ * 0 for incorrect cell
+ */
 
 int ValidCell3(char str[]) {
 	int length = strlen(str) ;
@@ -212,7 +248,10 @@ int ValidCell3(char str[]) {
 	return 0;
 }
 
-//Valid function ie. MIN , MAX , AVG etc
+/*
+ * Function to determine given string is a valid function
+ */
+
 int ValidFunction(char str[]) {
 	if (strcmp(str, "MIN") == 0) {
 		return 1;
@@ -231,7 +270,11 @@ int ValidFunction(char str[]) {
 	return 0 ;
 }
 
-//Valid Column comparision  ie. AA4 Z19 etc
+
+/*
+ * Function to compare two given cell (by there order)
+ */
+
 int ValidComp(char r1[], char r2[], char s1[], char s2[]) {
 	if(strlen(r1) > strlen(s1)) {
 		return 0;
@@ -249,7 +292,10 @@ int ValidComp(char r1[], char r2[], char s1[], char s2[]) {
 	return 0;
 }
 
-// Valid range
+/*
+ * Function to determine given range is valid or not
+ */
+
 int ValidRange(char str[], char* EqualExpr, char* PostExpr) {
 	int length = strlen(str) ;
 	if( length > 4) {
@@ -292,7 +338,11 @@ int ValidRange(char str[], char* EqualExpr, char* PostExpr) {
 	return 0 ;
 }
 
-//A map from arithmatic operations to their return values
+/*
+ * Function to determine given arithmatic
+ * operator is correct or not
+ */
+
 int RetValues(char C) {
 	if(C=='+') {
 		return 3 ;
@@ -306,7 +356,13 @@ int RetValues(char C) {
 	return 0 ;
 }
 
-//Valiid Post Expr for arithmatic Expre
+
+/*
+ * Function to determine given Post 
+ * Expression for arithmatic 
+ * operators is correct or not
+ */
+
 int ValidPostExpr(char str[], char* EqualExpr, char* PostExpr) {
 	int length = strlen(str) ;
 	if( length > 2) {
@@ -348,7 +404,12 @@ int ValidPostExpr(char str[], char* EqualExpr, char* PostExpr) {
 	return 0 ;
 }
 
-//Valiid Post Expr for function Expre
+/*
+ * Function to determine given Post 
+ * Expression for functions  
+ * is correct or not
+ */
+
 int ParseFunc(char str[],char EqualExpr[], char Exp1[],char Exp2[]) {
 	int length = strlen(str) ;
 	if (length < 4 || str[0] == '\0') {
@@ -408,49 +469,61 @@ int ParseFunc(char str[],char EqualExpr[], char Exp1[],char Exp2[]) {
 	return 0;
 }
 
+/*
+response.func values for different expressions
+Value: 
+○ Constant. Example: 23, 41.   1 
+○ Cell. Example: C1, Z22.   2 
+● Arithmetic expressions:  
+○ Value+Value 3
+○ Value-Value 4
+○ Value*Value 5
+○ Value/Value 6
 
-// Value: 
-// ○ Constant. Example: 23, 41.   1 
-// ○ Cell. Example: C1, Z22.   2 
-// ● Arithmetic expressions:  
-// ○ Value+Value 3
-// ○ Value-Value 4
-// ○ Value*Value 5
-// ○ Value/Value 6
-// ● Function: 
+● Function: 
+○ MIN(Range) 7
+○ MAX(Range) 8
+○ AVG(Range) 9
+○ SUM(Range) 10
+○ STDEV(Range) 11
+○ SLEEP(Value) 12
+● w for up 13,  
+● d for right 14,  
+● a for left 15,  
+● s for down 16,  
+● q: exit the program 17 ,
+disable_output 18
+enable_output 19
+scroll_to <CELL> 20
+*/
 
-// ○ MIN(Range) 7
-// ○ MAX(Range) 8
-// ○ AVG(Range) 9
-// ○ SUM(Range) 10
-// ○ STDEV(Range) 11
-// ○ SLEEP(Value) 12
-// ● w for up 13,  
-// ● d for right 14,  
-// ● a for left 15,  
-// ● s for down 16,  
-// ● q: exit the program 17 ,
-// disable_output 18
-// enable_output 19
-// scroll_to <CELL> 20
+/*
+Errors : 
+random user input not expected by the program  (unrecognized cmd)
+ (Invalid range) 
+
+ Argtype :
+ 0 -- 00 (Value Oper Value)
+ 1 -- 01 (Value Oper Cell)
+ 2 -- 10 (Cell Oper Value)
+ 3 -- 11 (Cell Oper Cell)
+
+*/
 
 
-//Errors : 
-//random user input not expected by the program  (unrecognized cmd)
- //(Invalid range) 
+/*
+ Status Codes
+ ok                -- 0
+ Bad Input         -- 1
+ Invalid range     -- 2 
+ Cycle detected    -- 4
+ Cell out of range -- 5
+*/
 
- //Argtype :
- //0 -- 00 (Value Oper Value)
- //1 -- 01 (Value Oper Cell)
- //2 -- 10 (Cell Oper Value)
- //3 -- 11 (Cell Oper Cell)
 
- //Status Codes
- //Totally(unrecognized cmd) 0
- //OK 1
- //Empty string 2 
- //Invalid Range 3
-
+/*
+ * Function to determine given Expression is correct or not 
+ */
 
 response parse(char str[]) {
 	response Returns = {0, 0, 0, 0, 0, 0};
