@@ -17,8 +17,7 @@
 void evaluate(struct cell *c) {
 
   // If oper is 1, then simple assignment operation
-  if (c->oper == 1)
-    ;
+  if (c->oper == 1) {;}
 
   // Identity dependency, Cell=Cell
   if (c->oper == 2) {
@@ -354,7 +353,7 @@ int evaluator(response r, database *db, int *topleft, _Bool *running, _Bool *dis
     target->error = old_error;
 
     free_ll(&dep_graph);
-    free_ll(&copy_dep);
+    //free_ll(&copy_dep);
 
     return 3;                   // Error code
   }

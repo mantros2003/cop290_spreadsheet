@@ -144,7 +144,7 @@ int ValidCell(char str[], char* sub1, char* sub2) {
 		strncpy(sub1, str + 0, idx);
 		sub1[idx] = '\0';
 		sub2[length-idx] = '\0';
-		if( ValidColumn(sub1)*ValidRow(sub2)) {
+		if( ValidColumn(sub1) && ValidRow(sub2)) {
 			return 1 ;
 		}
 	}
@@ -173,7 +173,7 @@ int ValidCell2(char str[]) {
 		strncpy(sub1, str + 0, idx);
 		sub1[idx] = '\0';
 		sub2[length-idx] = '\0';
-		if(ValidColumn(sub1)*ValidRow(sub2)) {
+		if(ValidColumn(sub1) && ValidRow(sub2)) {
 			return 1 ;
 		}
 	}
