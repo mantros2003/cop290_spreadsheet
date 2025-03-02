@@ -85,32 +85,15 @@ void free_segment(struct column_segment **head) {
  
   while (curr != NULL) {
     // First we free all isolated cells in the segment, then remove all dependencies
+    // Here, we ensure that all references to the cells in this segment are removed
     for (int i = 0; i < SEGMENT_LENGTH; i++) {
-    // printf("Before: ");
-    // printf("inedges: ");
-    // print_ll((curr->segment[i]).in_edges);
-    // printf("outedges: ");
-    // print_ll((curr->segment[i]).out_edges);
-      
-     
-      
       free_isolated_cells((curr->segment[i]).in_edges);
-    // printf("start:%d i:%d\n",curr->start_idx,i);
-     rm_all_dep(&(curr->segment[i]));
-     rm_all_dep2(&(curr->segment[i]));
-     //print_ll((curr->segment[i]).in_edges);
-    // free_ll(&((curr->segment[i]).in_edges));
-    // free_ll(&((curr->segment[i]).out_edges));
-     
-    // printf("After: ");
-    // printf("inedges: ");
-    // print_ll((curr->segment[i]).in_edges);
-    // printf("outedges: ");
-    // sprint_ll((curr->segment[i]).out_edges);
+      rm_in_edges(&(curr->segment[i]));
+      rm_out_edges(&(curr->segment[i]));
     }
 
     next_ptr = curr->next;
-    free(curr);
+    free(curr);                             // Frees the current segment
     curr = next_ptr;
   }
 

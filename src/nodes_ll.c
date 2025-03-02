@@ -64,32 +64,29 @@ void print_ll(struct nodes_ll *head) {
  * Removes the node which contains the pointer to cell target
  */
 void rm_node_ll(struct nodes_ll **head_node, struct cell *target) {
-
   struct nodes_ll *prev = NULL;
   struct nodes_ll *curr = *head_node;
   
   while (curr != NULL) {
     if (target == curr->cell_ptr) {
-      if (prev == NULL) {
-        *head_node = curr->next;
-      } else {
-        prev->next = curr->next;
-        
-      }
+      if (prev == NULL) *head_node = curr->next;        // Node to be rwmoved is head, so setting head to be curr's next
+      else prev->next = curr->next;                     // Setting prev's next to be curr's next
       
       curr->next = NULL;
-      free(curr);
 
-      break;
+      free(curr);
       
+      break;      
     }
    
     prev = curr;
     curr = curr->next;
   }
- 
 }
 
+/**
+ * Function returns a new linked list with all cell pointers in the same order
+ */
 struct nodes_ll *copy_ll(struct nodes_ll *node) {
   if (node == NULL) return NULL;
 

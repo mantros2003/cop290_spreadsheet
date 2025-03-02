@@ -450,7 +450,7 @@ int ParseFunc(char str[],char EqualExpr[], char Exp1[],char Exp2[]) {
 
 
 response parse(char str[]) {
-	response Returns = {0};
+	response Returns = {0, 0, 0, 0, 0, 0};
 	int length = strlen(str) ;
 	if( length == 0 ) {
 		Returns.status = 2;
