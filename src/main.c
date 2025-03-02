@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     int topleft_cell = 0;
     _Bool display_state = 1, running = 1;
     char buff[BUFFERSIZE];
-    char *status_msg[10] = {"ok", "Bad Input", "Invalid range", "Cycle detected"};
+    char *status_msg[10] = {"ok", "Bad Input", "Invalid range", "Cycle detected", "Cell out of range"};
 
     database *db = mk_db(num_cols, num_rows);
 
